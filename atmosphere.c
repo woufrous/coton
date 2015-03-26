@@ -40,7 +40,7 @@ Photon* process_photon(Box* b, Photon* p)
 
 		/* rotate direction vector */
 		_normalize(&helper);
-		rot1 = new_Mat3D_rotationAround(&helper, t_scat);
+		rot1 = new_Mat3D_rotationAround(&helper, acos(t_scat));
 		rot2 = new_Mat3D_rotationAround(p->dir, p_scat);
 
 		scat_dir = *(p->dir);
