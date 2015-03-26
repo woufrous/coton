@@ -12,6 +12,7 @@ extern Vec3D e2;
 extern Vec3D e3;
 
 Vec3D* new_Vec3D(double x, double y, double z);
+Vec3D* new_Vec3D_spherical(double r, double t, double p);
 
 typedef struct {
 	double m11, m12, m13;
@@ -23,6 +24,8 @@ char* show(Mat3D* self);
 
 double vmulv(Vec3D* a, Vec3D* b);
 Vec3D* mmulv(Mat3D* m, Vec3D* v);
+double length(Vec3D* v);
+Vec3D* normalize(Vec3D* v);
 
 
 #endif // __LINALG_H

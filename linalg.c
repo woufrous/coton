@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 Vec3D e1 = {1.0, 0.0, 0.0};
 Vec3D e2 = {0.0, 1.0, 0.0};
@@ -28,10 +29,32 @@ Vec3D* mmulv(Mat3D* m, Vec3D* v)
 	return ret;
 }
 
+double length(Vec3D* v)
+{
+	return sqrt(vmulv(v,v));
+}
+
+Vec3D* normalize(Vec3D* v)
+{
+	double len = length(v);
+	v->x /= len; v->y /= len; v->z /= len;
+
+	return v;
+}
+
 Vec3D* new_Vec3D(double x, double y, double z)
 {
 	Vec3D* ret = (Vec3D*)malloc(sizeof(Vec3D));
 	ret->x = x; ret->y = y; ret->z = z;
+	return ret;
+}
+
+Vec3D* new_Vec3D_spherical(double r, double t, double p)
+{
+	Vec3D* ret = (Vec3D*)malloc(sizeof(Vec3D));
+	ret->x = r * sin(t) * cos(p);
+	ret->y = r * sin(t) * sin(p);
+	ret->z = r * cos(t);
 	return ret;
 }
 
