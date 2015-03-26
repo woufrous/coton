@@ -39,6 +39,8 @@ int dispatch(int argc, char* argv[])
 		return tmp_main(argc, argv);
 	}
 	fprintf(stderr, "Unknown action: %s\n", argv[1]);
+
+	return -1;
 }
 
 int main(int argc, char* argv[])
