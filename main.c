@@ -23,9 +23,11 @@ typedef struct {
 } dispatch_item;
 
 int main_t1(int, char**);
+int main_t2(int, char**);
 
 dispatch_item dispatcher[] = {
 	{ "t1", main_t1 },
+	{ "t2", main_t2 },
 };
 
 int dispatch(int argc, char* argv[])
@@ -67,6 +69,19 @@ int main_t1(int argc, char* argv[])
 		// printf("%e\n", azimuthPDF(r));
 		// printf("%e\n", unityPDF(r));
 	}
+
+	return 0;
+}
+
+int main_t2(int argc, char* argv[])
+{
+	(void)argc; (void)argv;
+
+	Vec3D *v = new_Vec3D_spherical(55.0, 30.*3.14/180., 0);
+
+	double t = vmulv(normalize(v), &e1);
+
+	printf("Angle: %.2f\n", t);
 
 	return 0;
 }
