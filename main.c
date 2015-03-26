@@ -75,13 +75,45 @@ int main_t1(int argc, char* argv[])
 
 int main_t2(int argc, char* argv[])
 {
-	(void)argc; (void)argv;
+	int top=0, bottom=0;
+	int total, n_photons;
+	double sza, tau;
 
-	Vec3D *v = new_Vec3D_spherical(55.0, 30.*3.14/180., 0);
+	if (argc < 5) {
+		fprintf(stderr, "Usage: %s t2 tau sca nPhotons\n", argv[0]);
+		return -1;
+	}
+	tau = atof(argv[2]);
+	sza = atof(argv[3]);
+	n_photons = atoi(argv[4]);
 
-	double t = vmulv(normalize(v), &e1);
+	Vec3D* dir_0 = new_Vec3D_spherical(1.0, M_PI-degtorad(sza), 0);
+	Vec3D* pos_0 = new_Vec3D(0, 0, 1);
 
-	printf("Angle: %.2f\n", t);
+	Box* b = new_Box(new_Vec3D(0,0,0), new_Vec3D(0,0,1), 0, new_HenyeyGreensteinScatterer(tau), NULL);
+
+	for (int i=0; i<n_photons; ++i) {
+		Photon* p = process_photon(b, new_Photon(pos_0, dir_0, tauPDF((double)rand()/RAND_MAX)));
+		if (p->pos->z < b->pos->z)
+			bottom++;
+		else
+			top++;
+		free(p->pos);
+		free(p->dir);
+		free(p);
+	}
+
+
+	total = top+bottom;
+	printf("Top: %d, Bottom: %d\nT = %.3f, R = %.3f\n", top, bottom, bottom/(double)total, top/(double)total);
+
+	free(b->pos);
+	free(b->dim);
+	free(b->molecular);
+	free(b);
+	free(pos_0);
+	free(dir_0);
+
 
 	return 0;
 }

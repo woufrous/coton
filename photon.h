@@ -9,6 +9,6 @@ typedef struct {
 	double tau_r;
 } Photon;
 
-Photon* generate_photon(Vec3D* pos, Vec3D* dir);
+Photon* new_Photon(Vec3D* pos, Vec3D* dir, double tau_r);
 
 #endif // __PHOTON_H

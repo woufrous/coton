@@ -1,6 +1,13 @@
 #ifndef __LINALG_H
 #define __LINALG_H
 
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
+
+double radtodeg(double rad);
+double degtorad(double deg);
+
 typedef struct {
 	double x;
 	double y;
@@ -19,6 +26,12 @@ typedef struct {
 	double m21, m22, m23;
 	double m31, m32, m33;
 } Mat3D;
+
+/* rotation matrices
+ * -----------------
+ *  several rotation matrices
+ */
+Mat3D* new_Mat3D_rotationAround(Vec3D* n, double a);
 
 char* show(Mat3D* self);
 
@@ -45,6 +58,8 @@ Vec3D* _normalize(Vec3D* self);
 
 Vec3D* mmulv(Vec3D* v, Mat3D* m);
 Vec3D* _mmulv(Vec3D* self, Mat3D* m);
+
+// Vec3D* perpendicular(Vec3D* v);
 
 double length(Vec3D* v);
 

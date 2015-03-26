@@ -11,13 +11,19 @@ typedef struct {
 	double beta_scat;
 } Scatterer;
 
+Scatterer* new_HenyeyGreensteinScatterer(double beta);
+
 typedef struct {
-	Vec3D pos;
-	Vec3D dim;
+	Vec3D* pos;
+	Vec3D* dim;
 	double beta_abs;
 	Scatterer* molecular;
 	Scatterer* cloud;
 } Box;
+
+Box* new_Box(Vec3D* pos, Vec3D* dim, double b_abs, Scatterer* m, Scatterer* c);
+
+Photon* process_photon(Box* b, Photon* p);
 
 double rayleighPDF(double r);
 double henyeyGreensteinPDF(double r);

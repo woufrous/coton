@@ -2,11 +2,14 @@
 
 #include <stdlib.h>
 
-Photon* generate_photon(Vec3D* pos, Vec3D* dir)
+Photon* new_Photon(Vec3D* pos, Vec3D* dir, double tau_r)
 {
 	Photon* ret;
 	ret = (Photon*)malloc(sizeof(Photon));
-	ret->pos = pos;
-	ret->dir = dir;
+	ret->pos = (Vec3D*)malloc(sizeof(Vec3D));
+	*(ret->pos) = *pos;
+	ret->dir = (Vec3D*)malloc(sizeof(Vec3D));
+	*(ret->dir) = *dir;
+	ret->tau_r = tau_r;
 	return ret;
 }
