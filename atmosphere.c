@@ -36,7 +36,7 @@ Photon* process_photon(Box* b, Photon* p)
 
 		/* construct helper vector */
 		helper.x = 0; helper.y = -p->dir->z; helper.z = p->dir->y;
-		//if (helper.y == 0) helper.z = 1;
+		if (helper.y == 0) helper.z = 1; /* just in case the original vector is e_x */
 
 		/* rotate direction vector */
 		_normalize(&helper);
@@ -66,13 +66,15 @@ static Box* insert_Box(Box* base, Box* n)
 	} else if (n->pos->z < base->pos->z) {
 		if (base->lower == NULL) {
 			base->lower = n;
-			n -> upper = base;
+			n->upper = base;
+			n->dim->z = base->pos->z - n->pos->z;
 		} else
 			insert_Box(base->lower, n);
 	} else if (n->pos->z > base->pos->z) {
 		if (base->upper == NULL) {
 			base->upper = n;
 			n->lower = base;
+			base->dim->z = n->pos->z - base->pos->z;
 		} else
 			insert_Box(base->upper, n);
 	}
@@ -87,10 +89,11 @@ void plot_boxes(Box* n)
 
 	printf("|--------------TOA----------------\n");
 	while (n != NULL) {
-		printf("| beta_scat_m = %e\n", (n->molecular == NULL)? 0 : n->molecular->beta_scat);
-		printf("| beta_scat_c = %e\n", (n->cloud == NULL)? 0 : n->cloud->beta_scat);
-		printf("| beta_abs = %e\n", n->beta_abs);
-		printf("|-------------------- %e\n", n->pos->z);
+		printf("| beta_scat_m = %e 1/km\n", (n->molecular == NULL)? 0 : n->molecular->beta_scat);
+		printf("| beta_scat_c = %e 1/km\n", (n->cloud == NULL)? 0 : n->cloud->beta_scat);
+		printf("| beta_abs = %e 1/km\n", n->beta_abs);
+		printf("| height = %.2f km\n", n->dim->z);
+		printf("|----------------------------- %.0f km\n", n->pos->z);
 		n = n->lower;
 	}
 }
@@ -103,13 +106,17 @@ Box* read_atmosphere(const char* fn)
 	Box* ret = NULL;
 
 	fd = fopen(fn, "r");
+	if (fd == NULL) {
+		fprintf(stderr, "inputfile could not be opened: %s\n", fn);
+		return NULL;
+	}
 
+	/* create double linked box list from atmosphere file */
 	while (fgets(buf, sizeof(buf), fd) != 0) {
 		float z, beta_scat, beta_abs;
 		Box* tmp_box = NULL;
 		sscanf(buf, "%e %e %e", &z, &beta_scat, &beta_abs);
-		// printf("h: %e b_sca: %e b_abs: %e\n", z, beta_scat, beta_abs);
-		tmp_box = new_Box(new_Vec3D(0,0,z), new_Vec3D(0,0,1), beta_abs, new_HenyeyGreensteinScatterer(beta_scat), NULL);
+		tmp_box = new_Box(new_Vec3D(0,0,z), new_Vec3D(0,0,0), beta_abs, new_HenyeyGreensteinScatterer(beta_scat), NULL);
 		ret = insert_Box(ret, tmp_box);
 	}
 

@@ -128,6 +128,8 @@ int main_t3(int argc, char* argv[])
 	}
 
 	Box* atm = read_atmosphere(argv[2]);
+	if (atm == NULL)
+		return -1;
 	plot_boxes(atm);
 
 	return 0;
