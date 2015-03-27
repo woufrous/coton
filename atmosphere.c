@@ -59,6 +59,65 @@ Photon* process_photon(Box* b, Photon* p)
 	return p;
 }
 
+static Box* insert_Box(Box* base, Box* n)
+{
+	if (base == NULL) {
+		base = n;
+	} else if (n->pos->z < base->pos->z) {
+		if (base->lower == NULL) {
+			base->lower = n;
+			n -> upper = base;
+		} else
+			insert_Box(base->lower, n);
+	} else if (n->pos->z > base->pos->z) {
+		if (base->upper == NULL) {
+			base->upper = n;
+			n->lower = base;
+		} else
+			insert_Box(base->upper, n);
+	}
+	return n;
+}
+
+void plot_boxes(Box* n)
+{
+	/* find "uppest" element */
+	while (n->upper != NULL)
+		n = n->upper;
+
+	printf("|--------------TOA----------------\n");
+	while (n != NULL) {
+		printf("| beta_scat_m = %e\n", (n->molecular == NULL)? 0 : n->molecular->beta_scat);
+		printf("| beta_scat_c = %e\n", (n->cloud == NULL)? 0 : n->cloud->beta_scat);
+		printf("| beta_abs = %e\n", n->beta_abs);
+		printf("|-------------------- %e\n", n->pos->z);
+		n = n->lower;
+	}
+}
+
+
+Box* read_atmosphere(const char* fn)
+{
+	FILE* fd = NULL;
+	char buf[100];
+	Box* ret = NULL;
+
+	fd = fopen(fn, "r");
+
+	while (fgets(buf, sizeof(buf), fd) != 0) {
+		float z, beta_scat, beta_abs;
+		Box* tmp_box = NULL;
+		sscanf(buf, "%e %e %e", &z, &beta_scat, &beta_abs);
+		// printf("h: %e b_sca: %e b_abs: %e\n", z, beta_scat, beta_abs);
+		tmp_box = new_Box(new_Vec3D(0,0,z), new_Vec3D(0,0,1), beta_abs, new_HenyeyGreensteinScatterer(beta_scat), NULL);
+		ret = insert_Box(ret, tmp_box);
+	}
+
+	fclose(fd);
+
+	return ret;
+}
+
 Scatterer* new_HenyeyGreensteinScatterer(double beta)
 {
 	Scatterer* ret = (Scatterer*)malloc(sizeof(Scatterer));
@@ -75,6 +134,8 @@ Box* new_Box(Vec3D* pos, Vec3D* dim, double b_abs, Scatterer* m, Scatterer* c)
 	ret->beta_abs = b_abs;
 	ret->molecular = m;
 	ret->cloud = c;
+	ret->lower = NULL;
+	ret->upper = NULL;
 
 	return ret;
 }

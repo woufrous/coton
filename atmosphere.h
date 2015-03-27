@@ -13,13 +13,19 @@ typedef struct {
 
 Scatterer* new_HenyeyGreensteinScatterer(double beta);
 
-typedef struct {
+typedef struct Box {
 	Vec3D* pos;
 	Vec3D* dim;
 	double beta_abs;
 	Scatterer* molecular;
 	Scatterer* cloud;
+	struct Box* upper;
+	struct Box* lower;
 } Box;
+
+Box* read_atmosphere(const char* fn);
+
+void plot_boxes(Box* n);
 
 Box* new_Box(Vec3D* pos, Vec3D* dim, double b_abs, Scatterer* m, Scatterer* c);
 
