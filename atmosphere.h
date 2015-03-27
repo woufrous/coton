@@ -25,7 +25,10 @@ typedef struct Box {
 
 Box* read_atmosphere(const char* fn);
 
+void free_atmosphere(Box* atm);
+
 void plot_boxes(Box* n);
+Box* get_toa(Box* atm);
 
 Box* new_Box(Vec3D* pos, Vec3D* dim, double b_abs, Scatterer* m, Scatterer* c);
 

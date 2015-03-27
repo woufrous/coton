@@ -7,6 +7,7 @@ typedef struct {
 	Vec3D *pos;
 	Vec3D *dir;
 	double tau_r;
+	double weight;
 } Photon;
 
 Photon* new_Photon(Vec3D* pos, Vec3D* dir, double tau_r);

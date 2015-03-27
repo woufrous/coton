@@ -11,5 +11,6 @@ Photon* new_Photon(Vec3D* pos, Vec3D* dir, double tau_r)
 	ret->dir = (Vec3D*)malloc(sizeof(Vec3D));
 	*(ret->dir) = *dir;
 	ret->tau_r = tau_r;
+	ret->weight = 1.0;
 	return ret;
 }

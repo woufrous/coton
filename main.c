@@ -122,6 +122,10 @@ int main_t2(int argc, char* argv[])
 
 int main_t3(int argc, char* argv[])
 {
+	int top=0, bottom=0, total=0;
+	int n_photons=0;
+	double sza=0;
+
 	if (argc < 5) {
 		fprintf(stderr, "Usage: %s t3 atmophereFile sca nPhotons\n", argv[0]);
 		return -1;
@@ -131,6 +135,53 @@ int main_t3(int argc, char* argv[])
 	if (atm == NULL)
 		return -1;
 	plot_boxes(atm);
+
+	sza = atof(argv[3]);
+	n_photons = atoi(argv[4]);
+
+	Vec3D* dir_0 = new_Vec3D_spherical(1.0, M_PI-degtorad(sza), 0);
+	Vec3D* pos_0 = new_Vec3D(0, 0, 120.);
+
+	for (int i=0; i<n_photons; ++i) {
+		int escaped = 0, count = 0;
+		atm = get_toa(atm);
+		Photon* p = new_Photon(pos_0, dir_0, tauPDF((double)rand()/RAND_MAX));
+		while (!escaped && count < 1000) {
+			p = process_photon(atm, p);
+			if (p->pos->z <= atm->pos->z) {
+				// puts("Photon exited below");
+				if (atm->lower == NULL) {
+					printf("out we go @ (%.2f %.2f %.2f) -> (%.2f %.2f %.2f)\n", p->pos->x, p->pos->y, p->pos->z,
+							p->dir->x, p->dir->y, p->dir->z);
+					bottom += p->weight;
+					escaped = 1;
+				} else
+					atm = atm->lower;
+			} else {
+				// puts("Photon exited above");
+				if (atm->upper == NULL) {
+					top += p->weight;
+					escaped = 1;
+				} else
+					atm = atm->upper;
+			}
+			++count;
+		}
+		if (count >= 1000)
+			printf("something's fucky @ (%.2f %.2f %.2f) -> (%.2f %.2f %.2f)\n", p->pos->x, p->pos->y, p->pos->z,
+					p->dir->x, p->dir->y, p->dir->z);
+		free(p->pos);
+		free(p->dir);
+		free(p);
+	}
+
+	total = top+bottom;
+	printf("Top: %d, Bottom: %d\nT = %.3f, R = %.3f\n", top, bottom, bottom/(double)n_photons, top/(double)n_photons);
+
+	free_atmosphere(atm);
+
+	free(pos_0);
+	free(dir_0);
 
 	return 0;
 }
