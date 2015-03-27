@@ -24,10 +24,12 @@ typedef struct {
 
 int main_t1(int, char**);
 int main_t2(int, char**);
+int main_t3(int, char**);
 
 dispatch_item dispatcher[] = {
 	{ "t1", main_t1 },
 	{ "t2", main_t2 },
+	{ "t3", main_t3 },
 };
 
 int dispatch(int argc, char* argv[])
@@ -114,6 +116,19 @@ int main_t2(int argc, char* argv[])
 	free(pos_0);
 	free(dir_0);
 
+
+	return 0;
+}
+
+int main_t3(int argc, char* argv[])
+{
+	if (argc < 5) {
+		fprintf(stderr, "Usage: %s t3 atmophereFile sca nPhotons\n", argv[0]);
+		return -1;
+	}
+
+	Box* atm = read_atmosphere(argv[2]);
+	plot_boxes(atm);
 
 	return 0;
 }
