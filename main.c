@@ -142,6 +142,8 @@ int main_t3(int argc, char* argv[])
 	Vec3D* dir_0 = new_Vec3D_spherical(1.0, M_PI-degtorad(sza), 0);
 	Vec3D* pos_0 = new_Vec3D(0, 0, 120.);
 
+	FILE* f_hist = fopen("/tmp/scat_hist.txt", "w");
+
 	for (int i=0; i<n_photons; ++i) {
 		int escaped = 0;
 		atm = get_toa(atm);
@@ -165,10 +167,14 @@ int main_t3(int argc, char* argv[])
 			}
 		}
 
+		fprintf(f_hist, "%d\n", p->n_scat);
+
 		free(p->pos);
 		free(p->dir);
 		free(p);
 	}
+
+	fclose(f_hist);
 
 	printf("Top: %d, Bottom: %d\nT = %.3f, R = %.3f\n", top, bottom, bottom/(double)n_photons, top/(double)n_photons);
 

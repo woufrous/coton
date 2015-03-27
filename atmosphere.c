@@ -55,6 +55,9 @@ Photon* process_photon(Box* b, Photon* p)
 			double t_scat = b->molecular->pdf((double)rand()/RAND_MAX);
 			double p_scat = azimuthPDF((double)rand()/RAND_MAX);
 
+			/* increase scatter counter */
+			++(p->n_scat);
+
 			/* construct helper vector */
 			helper.x = 0; helper.y = -p->dir->z; helper.z = p->dir->y;
 			if (helper.y == 0) helper.z = 1; /* just in case the original vector is e_x */
