@@ -142,7 +142,10 @@ int main_t3(int argc, char* argv[])
 	Vec3D* dir_0 = new_Vec3D_spherical(1.0, M_PI-degtorad(sza), 0);
 	Vec3D* pos_0 = new_Vec3D(0, 0, 120.);
 
-	FILE* f_hist = fopen("/tmp/scat_hist.txt", "w");
+	char fn_hist[50];
+	snprintf(fn_hist, sizeof(fn_hist), "/tmp/scat_hist_%.0f.txt", sza);
+
+	FILE* f_hist = fopen(fn_hist, "w");
 
 	for (int i=0; i<n_photons; ++i) {
 		int escaped = 0;
